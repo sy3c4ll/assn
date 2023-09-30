@@ -49,11 +49,11 @@ int main(int argc, char **argv) {
 }
 
 void solve(int (*arr)[10], int N, int M, int S, int D) {
-  static constexpr int dx[4] = {1, 0, -1, 0},
-                       dy[4] = {0, 1, 0, -1};
+  constexpr int dx[4] = {1, 0, -1, 0},
+                dy[4] = {0, 1, 0, -1};
   size_t cx = 0,
-         cy = 0;
-  int dir = 0;
+         cy = 0,
+         dir = 0;
   for (size_t i = 0; i < N * M; i++) {
     arr[cx][cy] = S + D * i;
     if (cx + dx[dir] < 0 || cx + dx[dir] >= M

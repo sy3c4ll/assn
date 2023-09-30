@@ -12,7 +12,7 @@
     hyphenate: false,
 )
 #set heading(numbering: "1. ")
-#show heading: it => text(size: 12pt, it)
+#show heading: set text(size: 12pt)
 
 #align(center, text(size: 16pt)[
     *2023 Fall OOP Assignment Report*
@@ -23,7 +23,7 @@
     이름 : 김연웅 \
     Povis ID : yeonung04 \
 ])
-#rect(width: 100%)[#align(center)[
+#rect(width: 100%, align(center)[
     #set par(justify: false, leading: 1.08em)
     #block(spacing: 1.08em + 8pt)[
         *명예서약 (Honor Code)*
@@ -32,7 +32,7 @@
     다른 사람의 부적절한 도움을 받지 않고 완수하였습니다. \
     I completed this programming task without using any uncited sources \
     or receiving improper help from others. \
-]]
+])
 
 /* 프로그램을 하다 보면 결정해야 할 세부 사항이 많은데,
  * 이러한 세부 사항을 처리한 방법과 이유를 보고서에 쓰십시오.
@@ -62,9 +62,9 @@
 = 참고 문헌
 
 /* - 인터넷 등의 다른 소스에서 참고한 내용이 있으면 출처와 내용을 명확히 기술.
- *   #text(color: red)[#rect[
+ *   #text(color: red, rect[
  *      숙제를 위하여 다른 소스를 참고하고 하는 것은 좋으나, 그 경우에 반드시 출처를 명시
  *      해야 한다. 출처가 명시되어 있지 않은 경우는 부정행위로 간주될 수 있다.
- *   ]]
+ *   ])
  * - 함께 토의한 친구가 있다면 학번과 이름을 기재.
  */
