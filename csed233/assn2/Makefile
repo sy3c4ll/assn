@@ -16,8 +16,8 @@ BIN := pa2
 
 all: ${BINDIR}/${BIN}
 
-${BINDIR}/${BIN}: ${patsubst %,${OBJDIR}/%.o, ${SRC}} ${BINDIR}
-	${CXX} ${LDFLAGS} -o$@ ${patsubst %,${OBJDIR}/%.o, ${SRC}}
+${BINDIR}/${BIN}: ${patsubst %,${OBJDIR}/%.o,${SRC}} ${BINDIR}
+	${CXX} ${LDFLAGS} -o$@ ${patsubst %,${OBJDIR}/%.o,${SRC}}
 
 ${OBJDIR}/%.o: ${SRCDIR}/%.cpp ${OBJDIR}
 	${CXX} ${CXXFLAGS} -c -o$@ $<
@@ -29,13 +29,13 @@ ${BINDIR}:
 	${MD} $@
 
 run: ${BINDIR}/${BIN}
-	./$<
+	./$< ${ARGS}
 
 eval: ${BINDIR}/evaluate
-	./$<
+	./$< ${ARGS}
 
 ${BINDIR}/evaluate: ${SRCDIR}/evaluate.cpp ${BINDIR}
 	${CXX} ${CXXFLAGS} -o$@ $<
 
 clean:
-	${RM} ${patsubst %,${OBJDIR}/%.o, ${SRC}} ${BINDIR}/${BIN} ${BINDIR}/evaluate
+	${RM} ${patsubst %,${OBJDIR}/%.o,${SRC}} ${BINDIR}/${BIN} ${BINDIR}/evaluate

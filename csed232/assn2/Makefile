@@ -39,7 +39,7 @@ ${BINDIR}:
 	${MD} $@
 
 run: ${BIN}
-	./$<
+	./$< ${ARGS}
 
 ${BIN}: build
 
