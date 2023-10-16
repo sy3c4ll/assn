@@ -4,7 +4,7 @@ RM := rm -f
 RD := rm -rf
 MD := mkdir -p
 
-CXXFLAGS := -Wall -Wextra -pedantic -std=c++20 -O2 -g
+CXXFLAGS := -std=c++20 -Wall -Wextra -pedantic -O2 -g
 LDFLAGS :=
 
 SRCDIR := src

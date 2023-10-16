@@ -1,6 +1,7 @@
 CXX := g++
 RM := rm -f
-CXXFLAGS := -std=c++11 -Wall -Wextra -pedantic -O3 -g
+
+CXXFLAGS := -std=c++11 -Wall -Wextra -pedantic -O2 -g
 
 SRC := pa1 utils
 BIN := pa1
