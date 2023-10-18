@@ -227,8 +227,8 @@ void task_4(ofstream &fout, const char* argv[]) {
             answer = buildFromPostorder(0, n - 1);
         else
             answer = "error";
-    } catch (...) {
-        answer = "error";
+    } catch (char const* err) {
+        answer = err;
     }
     fout << answer << endl;
 }
@@ -267,16 +267,28 @@ void task_5(ofstream &fout, InstructionSequence &instr_seq)
                 int input_value = instr_seq.getInstruction(i).getValue();
 
                 /* BEGIN_YOUR_CODE*/
+                try {
+                    pq.insert(input_value, input_value);
+                } catch (char const* err) {
+                    fout << err << endl;
+                    exit(-1);
+                }
                 /* END_YOUR_CODE */
             }
             else if (command.compare("getMax") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
+                try {
+                    fout << pq.getMax().value << " ";
+                } catch (char const* err) {
+                    fout << err << " ";
+                }
                 /* END_YOUR_CODE */
             }
             else if (command.compare("isEmpty") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
+                fout << (pq.empty() ? "True" : "False") << " ";
                 /* END_YOUR_CODE */
             }
             else
@@ -322,16 +334,28 @@ void task_6(ofstream &fout, InstructionSequence &instr_seq)
                 int input_value = instr_seq.getInstruction(i).getValue();
 
                 /* BEGIN_YOUR_CODE*/
+                try {
+                    pq.insert(input_value, input_value);
+                } catch (char const* err) {
+                    fout << err << endl;
+                    exit(-1);
+                }
                 /* END_YOUR_CODE */
             }
             else if (command.compare("removeMax") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
+                try {
+                    pq.removeMax();
+                } catch (char const* err) {
+                    fout << err << " ";
+                }
                 /* END_YOUR_CODE */
             }
             else if (command.compare("isEmpty") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
+                fout << (pq.empty() ? "True" : "False") << " ";
                 /* END_YOUR_CODE */
             }
             else

@@ -20,10 +20,7 @@ private:
     /* END_YOUR_CODE */
 
 public:
-    PriorityQueue()
-    {
-        size = 0;
-    }
+    PriorityQueue() : size(0) {}
 
     bool insert(int priority, int value); // insert element
 

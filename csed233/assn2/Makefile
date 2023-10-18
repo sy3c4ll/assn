@@ -34,7 +34,7 @@ run: ${BINDIR}/${BIN}
 eval: ${BINDIR}/evaluate
 	./$< ${ARGS}
 
-${BINDIR}/evaluate: ${SRCDIR}/evaluate.cpp ${BINDIR}
+${BINDIR}/evaluate: ${SRCDIR}/evaluate.cpp | ${BINDIR}
 	${CXX} ${CXXFLAGS} -o$@ $<
 
 clean:
