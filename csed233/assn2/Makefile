@@ -16,10 +16,10 @@ BIN := pa2
 
 all: ${BINDIR}/${BIN}
 
-${BINDIR}/${BIN}: ${patsubst %,${OBJDIR}/%.o,${SRC}} ${BINDIR}
-	${CXX} ${LDFLAGS} -o$@ ${patsubst %,${OBJDIR}/%.o,${SRC}}
+${BINDIR}/${BIN}: ${patsubst %,${OBJDIR}/%.o,${SRC}} | ${BINDIR}
+	${CXX} ${LDFLAGS} -o$@ $^
 
-${OBJDIR}/%.o: ${SRCDIR}/%.cpp ${OBJDIR}
+${OBJDIR}/%.o: ${SRCDIR}/%.cpp | ${OBJDIR}
 	${CXX} ${CXXFLAGS} -c -o$@ $<
 
 ${OBJDIR}:

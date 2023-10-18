@@ -4,7 +4,7 @@
 using namespace std;
 
 struct Node {
-    Node(char input_value) : value(input_value), left(NULL), right(NULL) {}
+    Node(char input_value) : value(input_value), left(nullptr), right(nullptr) {}
     char value;
     Node *left;
     Node *right;
@@ -12,11 +12,8 @@ struct Node {
 
 class BinaryTree {
 public:
-    BinaryTree() { _root = NULL; };
-    ~BinaryTree() {
-        delete[] _root;
-        _root = NULL;
-    };
+    BinaryTree() : _root(nullptr) {}
+    ~BinaryTree() { delete[] _root; }
     void buildFromString(const char *data);
 
     string preOrder();
@@ -27,11 +24,8 @@ public:
 
 private:
     Node *_root;
-    Node *_buildFromString(const char *data, int start, int end);
     /////////////////////////////////////////////////////////
     //////  TODO: Add Private members if required ///////////
-    void _currentLevel(string &list, Node *a, int level);
-    void _general_tree(string &list, Node *a);
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 };

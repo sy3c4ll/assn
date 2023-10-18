@@ -40,7 +40,7 @@ using namespace std;
 void task_1(ofstream &fout, const char *quiz_num) {
     fout << "[Task 1]" << endl;
     int answer_1_1 = 1; // TODO: Change to your answer
-    int answer_1_2 = 0; // TODO: Change to your answer
+    int answer_1_2 = 3; // TODO: Change to your answer
 
     if (!strcmp(quiz_num, "1")) {
         fout << answer_1_1 << endl;
@@ -135,7 +135,6 @@ void task_3(ofstream &fout, const char *tree_string,
         - “error” if given traversals cannot identify a binary tree.
         - String of a binary tree of format introduced in pre-2.
 */
-int orderIndex;
 int inorder[100];
 int order[100];
 int inorderIdx[100];
@@ -144,7 +143,23 @@ string buildFromPreorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    return "";
+    if (inLeft > inRight)
+        return "";
+    else if (inLeft == inRight)
+        if (inorder[inLeft] == order[inLeft])
+            return to_string(inorder[inLeft]);
+        else
+            throw "error";
+    else {
+        int idx = inorderIdx[order[inLeft]];
+        if (idx < 0)
+            throw "error";
+        for (int i = inLeft; i < idx; ++i)
+            order[i] = order[i + 1];
+        order[idx] = inorder[idx];
+        return to_string(inorder[idx]) + '(' + buildFromPreorder(inLeft, idx - 1) + ')' + '(' + buildFromPreorder(idx + 1, inRight) + ')';
+    }
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
@@ -153,33 +168,49 @@ string buildFromPostorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    return "";
+    if (inLeft > inRight)
+        return "";
+    else if (inLeft == inRight)
+        if (inorder[inRight] == order[inRight])
+            return to_string(inorder[inRight]);
+        else
+            throw "error";
+    else {
+        int idx = inorderIdx[order[inRight]];
+        if (idx < 0)
+            throw "error";
+        for (int i = inRight; i > idx; --i)
+            order[i] = order[i - 1];
+        order[idx] = inorder[idx];
+        return to_string(inorder[idx]) + '(' + buildFromPostorder(inLeft, idx - 1) + ')' + '(' + buildFromPostorder(idx + 1, inRight) + ')';
+    }
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
 
-void parseInput4(const char *str, int *arr) {
-    char input[100];
-    strcpy(input, str);
-    char *token = strtok(input, "[,]");
-    int index = 0;
+size_t parse_array_from_c_str(const char *str, int *arr) {
+    char *cpy = strdup(str);
+    char *token = strtok(cpy, "[,]");
+    size_t index = 0;
     while (token != NULL) {
         arr[index++] = atoi(token);
         token = strtok(NULL, "[,]");
     }
+    free(cpy);
+    return index;
 }
 
 void task_4(ofstream &fout, const char* argv[]) {
     fout << "[Task 4]" << endl;
     string answer;
 
-    parseInput4(argv[0], inorder);
-    int n = 0;
-    while (inorder[n])
-        n++;
+    size_t n = parse_array_from_c_str(argv[0], inorder);
+    size_t m = parse_array_from_c_str(argv[1], order);
 
-    for (int i = 0; i < n; i++) {
-        inorderIdx[inorder[i]] = i;
+    if (n != m) {
+        fout << "error" << endl;
+        return;
     }
 
     // Initialize with -1 to detect invalid values
@@ -187,24 +218,16 @@ void task_4(ofstream &fout, const char* argv[]) {
     for (int i = 0; i < n; i++) {
         inorderIdx[inorder[i]] = i;
     }
-    parseInput4(argv[1], order);
-    int m = 0;
-    while (order[m])
-        m++;
-
-    if (n != m) {
-        fout << "error" << endl;
-        return;
-    }
 
     // Compare type of traversal and choose proper function
-    if (strcmp(argv[2], "pre") == 0) {
-        orderIndex = 0;
-        answer = buildFromPreorder(0, n - 1);
-    } else if (strcmp(argv[2], "post") == 0) {
-        orderIndex = n - 1;
-        answer = buildFromPostorder(0, n - 1);
-    } else {
+    try {
+        if (strcmp(argv[2], "pre") == 0)
+            answer = buildFromPreorder(0, n - 1);
+        else if (strcmp(argv[2], "post") == 0)
+            answer = buildFromPostorder(0, n - 1);
+        else
+            answer = "error";
+    } catch (...) {
         answer = "error";
     }
     fout << answer << endl;

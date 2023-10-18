@@ -33,9 +33,9 @@ int findIndex(const char *str, int start, int end) {
 }
 
 /* This is given function. DO NOT MODIFY THIS FUNCTION */
-Node *BinaryTree::_buildFromString(const char *data, int start, int end) {
+Node *_buildFromString(const char *data, int start, int end) {
   if (start > end)
-    return NULL;
+    return nullptr;
 
   Node *root = new Node(data[start]);
   int index = -1;
@@ -56,39 +56,56 @@ void BinaryTree::buildFromString(const char *data) {
   _root = root;
 }
 
-string BinaryTree::general_tree(){
-    /////////////////////////////////////////////////////////
-    //////////  TODO: Implement From Here      //////////////
+string BinaryTree::general_tree() {
+  /////////////////////////////////////////////////////////
+  //////////  TODO: Implement From Here      //////////////
 
-   return "";
+  static string (*general_tree_from)(Node *) = [] (Node *root) {
+    string s;
 
-    ///////////      End of Implementation      /////////////
-    /////////////////////////////////////////////////////////
+    s = root->value;
+    for (Node *cur = root->left; cur; cur = cur->right)
+      s += '(' + general_tree_from(cur) + ')';
+
+    return s;
+  };
+
+  return _root ? general_tree_from(_root) : "";
+
+  ///////////      End of Implementation      /////////////
+  /////////////////////////////////////////////////////////
 }
 
 string BinaryTree::levelOrder() {
-    /////////////////////////////////////////////////////////
-    //////////  TODO: Implement From Here      //////////////
+  /////////////////////////////////////////////////////////
+  //////////  TODO: Implement From Here      //////////////
 
-    return "";
+  string s;
 
-    ///////////      End of Implementation      /////////////
-    /////////////////////////////////////////////////////////
-}
+  basic_string<Node *> queue = {_root};
+  for (; !queue.empty(); queue.erase(0, 1))
+    if (queue[0]) {
+      s.push_back(queue[0]->value);
+      s.push_back(' ');
+      queue.push_back(queue[0]->left);
+      queue.push_back(queue[0]->right);
+    }
 
-void BinaryTree::_currentLevel(string &list, Node *a, int level){
-    /////////////////////////////////////////////////////////
-    //////////  TODO: Implement From Here      //////////////
+  return s;
 
-    ///////////      End of Implementation      /////////////
-    /////////////////////////////////////////////////////////
+  ///////////      End of Implementation      /////////////
+  /////////////////////////////////////////////////////////
 }
 
 string BinaryTree::preOrder() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  return "";
+  static string (*preorder_from)(Node *) = [] (Node *root) {
+    return root ? root->value + " " + preorder_from(root->left) + preorder_from(root->right) : "";
+  };
+
+  return preorder_from(_root);
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
@@ -98,7 +115,11 @@ string BinaryTree::postOrder() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  return "";
+  static string (*postorder_from)(Node *) = [] (Node *root) {
+    return root ? postorder_from(root->left) + postorder_from(root->right) + root->value + " " : "";
+  };
+
+  return postorder_from(_root);
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
@@ -108,7 +129,11 @@ string BinaryTree::inOrder() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  return "";
+  static string (*inorder_from)(Node *) = [] (Node *root) {
+    return root ? inorder_from(root->left) + root->value + " " + inorder_from(root->right) : "";
+  };
+
+  return inorder_from(_root);
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////

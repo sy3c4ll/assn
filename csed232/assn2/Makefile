@@ -1,7 +1,6 @@
 CXX := g++
 TYP := typst compile
-RM := rm -f
-RD := rm -rf
+RM := rm -rf
 MD := mkdir -p
 
 CXXFLAGS := -std=c++20 -Wall -Wextra -pedantic -O2 -g
@@ -26,10 +25,12 @@ doc: ${DOC:.typ=.pdf}
 ${DOCDIR}/%.pdf: ${DOCDIR}/%.typ
 	${TYP} $<
 
-build: ${OBJ} ${BINDIR}
-	${CXX} ${LDFLAGS} -o${BIN} ${OBJ}
+build: ${BIN}
 
-${OBJDIR}/%.o: ${SRCDIR}/%.cpp ${OBJDIR}
+${BIN}: ${OBJ} | ${BINDIR}
+	${CXX} ${LDFLAGS} -o${BIN} $^
+
+${OBJDIR}/%.o: ${SRCDIR}/%.cpp | ${OBJDIR}
 	${CXX} ${CXXFLAGS} -c -o$@ $<
 
 ${OBJDIR}:
@@ -41,9 +42,7 @@ ${BINDIR}:
 run: ${BIN}
 	./$< ${ARGS}
 
-${BIN}: build
-
 clean:
-	${RD} ${OBJDIR}
-	${RD} ${BINDIR}
+	${RM} ${OBJDIR}
+	${RM} ${BINDIR}
 	${RM} ${DOC:.typ=.pdf}
