@@ -8,8 +8,8 @@ class option {
   bool type;
   T data;
 
-  option(bool _type): type(_type) {}
-  option(bool _type, T const& _data): type(_type), data(_data) {}
+  option(bool _type) : type(_type) {}
+  option(bool _type, T const& _data) : type(_type), data(_data) {}
 
 public:
   constexpr static option<T> some(T const& value) noexcept { return option{true, value}; }
@@ -19,7 +19,7 @@ public:
   option<T const*> as_ref() const noexcept { return type ? option<T const*>::some(&data) : option<T const*>::none(); }
   option<T*> as_mut() noexcept { return type ? option<T*>::some(&data) : option<T*>::none(); }
   T expect(char const* msg) const { if (type) return data; else throw msg; }
-  T unwrap() const { if (type) return data; else throw; }
+  T unwrap() const { if (type) return data; else throw nullptr; }
   T unwrap_or(T const& dfl) const noexcept { return type ? data : dfl; }
   T unwrap_or_else(T (*f)(void)) const noexcept { return type ? data : f(); }
   T unwrap_unchecked() const noexcept { return data; }
@@ -43,14 +43,18 @@ public:
   option<T> take() noexcept { type = false; return some(std::move(data)); }
   option<T> replace(T const& value) noexcept { T old = std::move(data); data = value; return some(std::move(old)); }
   bool operator==(option<T> const& optb) const noexcept { return type == optb.type && (type == false || data == optb.data); }
+  bool operator!=(option<T> const& optb) const noexcept { return !(*this == optb); }
   bool operator<(option<T> const& optb) const noexcept { return type < optb.type || (type == true && data < optb.data); }
+  bool operator>(option<T> const& optb) const noexcept { return optb < *this; }
+  bool operator<=(option<T> const& optb) const noexcept { return !(*this > optb); }
+  bool operator>=(option<T> const& optb) const noexcept { return !(*this < optb); }
 };
 
 template <typename T>
 class option<T*> {
   T* data;
 
-  option(T* _data): data(_data) {}
+  option(T* _data) : data(_data) {}
 
 public:
   constexpr static option<T*> some(T* value) noexcept { return option{value}; }
@@ -60,7 +64,7 @@ public:
   option<T* const*> as_ref() const noexcept { return data ? option<T* const*>::some(&data) : option<T* const*>::none(); }
   option<T**> as_mut() noexcept { return data ? option<T**>::some(&data) : option<T**>::none(); }
   T* expect(char const* msg) const { if (data) return data; else throw msg; }
-  T* unwrap() const { if (data) return data; else throw; }
+  T* unwrap() const { if (data) return data; else throw nullptr; }
   T* unwrap_or(T* dfl) const noexcept { return data ? data : dfl; }
   T* unwrap_or_else(T* (*f)(void)) const noexcept { return data ? data : f(); }
   T* unwrap_unchecked() const noexcept { return data; }
@@ -84,14 +88,18 @@ public:
   option<T*> take() noexcept { T* old = data; data = nullptr; return some(old); }
   option<T*> replace(T* value) noexcept { T* old = data; data = value; return some(old); }
   bool operator==(option<T*> const& optb) const noexcept { return data == optb.data; }
+  bool operator!=(option<T*> const& optb) const noexcept { return !(*this == optb); }
   bool operator<(option<T*> const& optb) const noexcept { return (!data && optb.data) || (data && optb.data && *data < *optb.data); }
+  bool operator>(option<T*> const& optb) const noexcept { return optb < *this; }
+  bool operator<=(option<T*> const& optb) const noexcept { return !(*this > optb); }
+  bool operator>=(option<T*> const& optb) const noexcept { return !(*this < optb); }
 };
 
 template <typename T>
 class option<std::unique_ptr<T>> {
   std::unique_ptr<T> data;
 
-  option(std::unique_ptr<T> _data): data(std::move(_data)) {}
+  option(std::unique_ptr<T> _data) : data(std::move(_data)) {}
 
 public:
   constexpr static option<std::unique_ptr<T>> some(std::unique_ptr<T> value) noexcept { return option{std::move(value)}; }
@@ -101,7 +109,7 @@ public:
   option<std::unique_ptr<T> const*> as_ref() const noexcept { return data ? option<std::unique_ptr<T> const*>::some(&data) : option<std::unique_ptr<T> const*>::none(); }
   option<std::unique_ptr<T>*> as_mut() noexcept { return data ? option<std::unique_ptr<T>*>::some(&data) : option<std::unique_ptr<T>*>::none(); }
   std::unique_ptr<T> expect(char const* msg) { if (data) return std::move(data); else throw msg; }
-  std::unique_ptr<T> unwrap() { if (data) return std::move(data); else throw; }
+  std::unique_ptr<T> unwrap() { if (data) return std::move(data); else throw nullptr; }
   std::unique_ptr<T> unwrap_or(std::unique_ptr<T> dfl) noexcept { return data ? std::move(data) : std::move(dfl); }
   std::unique_ptr<T> unwrap_or_else(std::unique_ptr<T> (*f)(void)) noexcept { return data ? std::move(data) : std::move(f()); }
   std::unique_ptr<T> unwrap_unchecked() noexcept { return std::move(data); }
@@ -125,7 +133,11 @@ public:
   option<std::unique_ptr<T>> take() noexcept { std::unique_ptr<T> old = std::move(data); data = nullptr; return some(std::move(old)); }
   option<std::unique_ptr<T>> replace(std::unique_ptr<T> value) noexcept { std::unique_ptr<T> old = std::move(data); data = std::move(value); return some(std::move(old)); }
   bool operator==(option<std::unique_ptr<T>> const& optb) const noexcept { return data == optb.data; }
-  bool operator<(option<T> const& optb) const noexcept { return (!data && optb.data) || (data && optb.data && *data < *optb.data); }
+  bool operator!=(option<std::unique_ptr<T>> const& optb) const noexcept { return !(*this == optb); }
+  bool operator<(option<std::unique_ptr<T>> const& optb) const noexcept { return (!data && optb.data) || (data && optb.data && *data < *optb.data); }
+  bool operator>(option<std::unique_ptr<T>> const& optb) const noexcept { return optb < *this; }
+  bool operator<=(option<std::unique_ptr<T>> const& optb) const noexcept { return !(*this > optb); }
+  bool operator>=(option<std::unique_ptr<T>> const& optb) const noexcept { return !(*this < optb); }
 };
 
 template <typename T>

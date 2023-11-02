@@ -28,7 +28,7 @@ ${DOCDIR}/%.pdf: ${DOCDIR}/%.typ
 build: ${BIN}
 
 ${BIN}: ${OBJ} | ${BINDIR}
-	${CXX} ${LDFLAGS} -o${BIN} $^
+	${CXX} ${LDFLAGS} -o$@ $^
 
 ${OBJDIR}/%.o: ${SRCDIR}/%.cpp | ${OBJDIR}
 	${CXX} ${CXXFLAGS} -c -o$@ $<

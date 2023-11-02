@@ -9,7 +9,7 @@ namespace sort {
         b = a;
     }
     template <typename T>
-    void insertion_sort(T *begin, T *end, bool (*cmp)(T const&, T const&) = T::operator<) {
+    void insertion_sort(T* begin, T* end, bool (*cmp)(T const&, T const&) = T::operator<) {
         for (T *i = begin; i < end; ++i)
             for (T *j = i; j > begin && cmp(*j, *(j - 1)); --j)
                 swap(*j, *(j - 1));

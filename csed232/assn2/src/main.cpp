@@ -1,6 +1,5 @@
-#include <iostream>
-
 #include "option.hpp"
+#include <iostream>
 
 using std::cout;
 using std::endl;
