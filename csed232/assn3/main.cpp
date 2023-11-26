@@ -93,7 +93,7 @@ void test_float_vec()
 void test_float_vec_template()
 {
 	Vector<float> vec;
-	vec.foo(3.0f);
+	vec.push_back(3.0f);
 }
 
 void test_matrix()

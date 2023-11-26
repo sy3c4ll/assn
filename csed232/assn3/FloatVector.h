@@ -3,57 +3,65 @@
 
 #include <cstdlib>
 
+// Uncomment this line to invalidate my three hours
+// using FloatVector = Vector<float>;
+
 class FloatVector {
 private:
-    float* m_data;
-    std::size_t m_capacity;
-    std::size_t m_size;
+	float* m_data;
+	std::size_t m_capacity;
+	std::size_t m_size;
 
 public:
-    typedef float* iterator;
-    typedef const float* const_iterator;
+	typedef float* iterator;
+	typedef const float* const_iterator;
 
-    FloatVector();
-    FloatVector(int size);
-    FloatVector(int size, const float& init);
-    FloatVector(int size, const float* init);
-    FloatVector(const FloatVector& v);
-    FloatVector(FloatVector&& v);
+	FloatVector();
+	FloatVector(std::size_t size);
+	FloatVector(std::size_t size, const float& init);
+	FloatVector(std::size_t size, const float* init);
+	FloatVector(const FloatVector& v);
+	FloatVector(FloatVector&& v);
 
-    ~FloatVector();
+	~FloatVector();
 
-    int capacity() const;
-    int size() const;
+	std::size_t capacity() const;
+	std::size_t size() const;
 
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
+	iterator begin();
+	const_iterator begin() const;
+	iterator end();
+	const_iterator end() const;
 
-    float& front();
-    const float& front() const;
-    float& back();
-    const float& back() const;
+	float& front();
+	const float& front() const;
+	float& back();
+	const float& back() const;
 
-    void allocate(int capacity);
+	void allocate(std::size_t capacity);
 
-    void resize(int size);
+	void resize(std::size_t size);
 
-    void push_back(const float& value);
+	void push_back(const float& value);
 
-    void pop_back();
+	void pop_back();
 
-    void insert(iterator position, const float& value);
-    void insert(iterator position, const float* first, const float* last);
+	void insert(iterator position, const float& value);
+	void insert(iterator position, const float* first, const float* last);
 
-    void erase(iterator position);
+	void erase(iterator position);
 
-    void clear();
+	void clear();
 
-    float& operator[](int index);
-    const float& operator[](int index) const;
-    FloatVector& operator=(const FloatVector& v);
+	float& operator[](std::size_t index);
+	const float& operator[](std::size_t index) const;
+	bool operator==(const FloatVector& v) const;
+	bool operator!=(const FloatVector& v) const;
+	bool operator==(const float* v) const;
+	bool operator!=(const float* v) const;
+
+	FloatVector& operator=(const FloatVector& v);
+	FloatVector& operator=(FloatVector&& v);
 };
 
 #endif
-
