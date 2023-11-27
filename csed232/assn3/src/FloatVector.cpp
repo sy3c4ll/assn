@@ -14,7 +14,7 @@ FloatVector::FloatVector(std::size_t size)
 FloatVector::FloatVector(std::size_t size, const float& init)
 	: m_data{(float*) std::malloc(size * sizeof(float))}, m_capacity{size}, m_size{size}
 {
-	for (int i = 0; i < size; i++)
+	for (std::size_t i = 0; i < size; i++)
 		m_data[i] = init;
 }
 

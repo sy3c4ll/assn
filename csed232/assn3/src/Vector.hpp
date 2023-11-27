@@ -19,7 +19,7 @@ template <typename T>
 Vector<T>::Vector(std::size_t size, const T& init)
 	: m_data{(T*) std::calloc(size, sizeof(T))}, m_capacity{size}, m_size{size}
 {
-	for (int i = 0; i < size; i++)
+	for (std::size_t i = 0; i < size; i++)
 		m_data[i] = init;
 }
 
