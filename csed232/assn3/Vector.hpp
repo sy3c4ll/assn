@@ -17,7 +17,7 @@ Vector<T>::Vector(std::size_t size)
 
 template <typename T>
 Vector<T>::Vector(std::size_t size, const T& init)
-	: m_data{(T*) std::malloc(size * sizeof(T))}, m_capacity{size}, m_size{size}
+	: m_data{(T*) std::calloc(size, sizeof(T))}, m_capacity{size}, m_size{size}
 {
 	for (int i = 0; i < size; i++)
 		m_data[i] = init;
@@ -25,7 +25,7 @@ Vector<T>::Vector(std::size_t size, const T& init)
 
 template <typename T>
 Vector<T>::Vector(std::size_t size, const T* init)
-	: m_data{(T*) std::malloc(size * sizeof(T))}, m_capacity{size}, m_size{size}
+	: m_data{(T*) std::calloc(size, sizeof(T))}, m_capacity{size}, m_size{size}
 {
 	for (std::size_t i = 0; i < m_size; ++i)
 		m_data[i] = init[i];
@@ -33,7 +33,7 @@ Vector<T>::Vector(std::size_t size, const T* init)
 
 template <typename T>
 Vector<T>::Vector(const Vector& v)
-	: m_data{(T*) std::malloc(v.m_capacity * sizeof(T))}, m_capacity{v.m_capacity}, m_size{v.m_size}
+	: m_data{(T*) std::calloc(v.m_capacity, sizeof(T))}, m_capacity{v.m_capacity}, m_size{v.m_size}
 {
 	for (std::size_t i = 0; i < m_size; ++i)
 		m_data[i] = v.m_data[i];

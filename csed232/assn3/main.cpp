@@ -18,6 +18,15 @@ void print_float_vec(const FloatVector& vec)
 	cout << endl;
 }
 
+void print_matrix(const Matrix& mat)
+{
+	cout << "----------------------------------------" << endl;
+	cout << "Print (rowCount, colCount)" << endl;
+	cout << "(" << mat.rowCount() << ", " << mat.colCount() << ")\n\n";
+	cout << "Print Data" << endl;
+	for (size_t i = 0; i < mat.rowCount(); ++i) { for (size_t j = 0; j < mat.colCount(); ++j) cout << mat[i][j] << "\t"; cout << endl; }
+}
+
 void test_float_vec()
 {
 	cout << "========================================" << endl;
@@ -113,33 +122,52 @@ void test_matrix()
 	matrix2.element(1, 0) = 0.5;
 	matrix2.element(1, 1) = 0.5;
 
+	print_matrix(matrix1);
+	print_matrix(matrix2);
+
 	// Çà·Ä µ¡¼À
 	Matrix resultAdd = matrix1;
 	resultAdd += matrix2;
-	
+
+	print_matrix(resultAdd);
+
 	// Çà·Ä »¬¼À
 	Matrix resultSubtract = matrix1;
 	resultSubtract -= matrix2;
-	
+
+	print_matrix(resultSubtract);
+
 	// Çà·Ä °ö¼À (¿ä¼Òº°)
 	Matrix resultMultiply = matrix1;
 	resultMultiply *= matrix2;
-	
+
+	print_matrix(resultMultiply);
+
 	// Çà·Ä ½ºÄ®¶ó °ö¼À
 	Matrix resultScalarMultiply = matrix1;
 	resultScalarMultiply *= 2.0;
-	
+
+	print_matrix(resultScalarMultiply);
+
 	// Çà·Ä °ö¼À
 	Matrix matrix3(2, 3);
 	Matrix resultMatMul = matrix1.matmul(matrix3);
-	
+
+	print_matrix(resultMatMul);
+
 	// ÇÕ°è ¿¬»ê
 	Matrix resultSumRow = matrix1.sum(0);
 	Matrix resultSumCol = matrix1.sum(1);
 	Matrix resultSumAll = matrix1.sum();
-	
+
+	print_matrix(resultSumRow);
+	print_matrix(resultSumCol);
+	print_matrix(resultSumAll);
+
 	// ÀüÄ¡ Çà·Ä
 	matrix1.transpose();
+
+	print_matrix(matrix1);
 }
 
 int main()

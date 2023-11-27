@@ -33,6 +33,16 @@ Matrix::~Matrix()
 {
 }
 
+std::size_t Matrix::rowCount() const
+{
+	return m_rowCount;
+}
+
+std::size_t Matrix::colCount() const
+{
+	return m_colCount;
+}
+
 float& Matrix::element(std::size_t i, std::size_t j)
 {
 	// SAFETY: No bounds checking is performed by either this function

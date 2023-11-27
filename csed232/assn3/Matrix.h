@@ -19,6 +19,9 @@ public:
     Matrix(Matrix&& other);
     ~Matrix();
 
+    std::size_t rowCount() const;
+    std::size_t colCount() const;
+
     const float& element(std::size_t i, std::size_t j) const;
     float& element(std::size_t i, std::size_t j);
 
