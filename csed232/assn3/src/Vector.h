@@ -4,11 +4,14 @@
 #include <cstdlib>
 
 template <typename T>
-class Vector {
+class Vector
+{
 private:
 	T* m_data;
 	std::size_t m_capacity;
 	std::size_t m_size;
+
+	void prepare_extra(std::size_t extra);
 
 public:
 	typedef T* iterator;

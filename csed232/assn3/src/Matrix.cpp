@@ -3,13 +3,11 @@
 
 Matrix::Matrix()
 	: m_data{1, FloatVector{1}}, m_rowCount{1}, m_colCount{1}
-{
-}
+{ }
 
 Matrix::Matrix(std::size_t rowCount, std::size_t colCount)
 	: m_data{rowCount, FloatVector{colCount}}, m_rowCount{rowCount}, m_colCount{colCount}
-{
-}
+{ }
 
 Matrix::Matrix(std::size_t rowCount, std::size_t colCount, const float* const* data)
 	: m_data{rowCount}, m_rowCount{rowCount}, m_colCount{colCount}
@@ -21,17 +19,14 @@ Matrix::Matrix(std::size_t rowCount, std::size_t colCount, const float* const* d
 
 Matrix::Matrix(const Matrix& other)
 	: m_data{other.m_data}, m_rowCount{other.m_rowCount}, m_colCount{other.m_colCount}
-{
-}
+{ }
 
 Matrix::Matrix(Matrix&& other)
 	: m_data{std::move(other.m_data)}, m_rowCount{other.m_rowCount}, m_colCount{other.m_colCount}
-{
-}
+{ }
 
 Matrix::~Matrix()
-{
-}
+{ }
 
 std::size_t Matrix::rowCount() const
 {
@@ -64,6 +59,7 @@ Matrix& Matrix::operator+=(const Matrix& other)
 		for (std::size_t i = 0; i < m_rowCount; ++i)
 			for (std::size_t j = 0; j < m_colCount; ++j)
 				m_data[i][j] += other.m_data[i][j];
+
 	return *this;
 }
 
@@ -74,6 +70,7 @@ Matrix& Matrix::operator-=(const Matrix& other)
 		for (std::size_t i = 0; i < m_rowCount; ++i)
 			for (std::size_t j = 0; j < m_colCount; ++j)
 				m_data[i][j] -= other.m_data[i][j];
+
 	return *this;
 }
 
@@ -84,6 +81,7 @@ Matrix& Matrix::operator*=(const Matrix& other)
 		for (std::size_t i = 0; i < m_rowCount; ++i)
 			for (std::size_t j = 0; j < m_colCount; ++j)
 				m_data[i][j] *= other.m_data[i][j];
+
 	return *this;
 }
 
@@ -92,6 +90,7 @@ Matrix& Matrix::operator*=(float other)
 	for (std::size_t i = 0; i < m_rowCount; ++i)
 		for (std::size_t j = 0; j < m_colCount; ++j)
 			m_data[i][j] *= other;
+
 	return *this;
 }
 
@@ -137,12 +136,14 @@ bool Matrix::operator!=(const float* const* data) const
 Matrix& Matrix::operator=(const Matrix& other)
 {
 	m_data = other.m_data, m_colCount = other.m_colCount, m_rowCount = other.m_rowCount;
+
 	return *this;
 }
 
 Matrix& Matrix::operator=(Matrix&& other)
 {
 	m_data = std::move(other.m_data), m_colCount = other.m_colCount, m_rowCount = other.m_rowCount;
+
 	return *this;
 }
 
@@ -171,6 +172,7 @@ Matrix Matrix::sum(int axis) const
 		for (std::size_t i = 0; i < m_colCount; ++i)
 			for (std::size_t j = 0; j < m_rowCount; ++j)
 				result.m_data[0][i] += m_data[j][i];
+
 		return result;
 	}
 	else if (axis == 1)
@@ -179,6 +181,7 @@ Matrix Matrix::sum(int axis) const
 		for (std::size_t i = 0; i < m_rowCount; ++i)
 			for (std::size_t j = 0; j < m_colCount; ++j)
 				result.m_data[i][0] += m_data[i][j];
+
 		return result;
 	}
 	else
@@ -187,6 +190,7 @@ Matrix Matrix::sum(int axis) const
 		for (std::size_t i = 0; i < m_rowCount; ++i)
 			for (std::size_t j = 0; j < m_colCount; ++j)
 				result.m_data[0][0] += m_data[i][j];
+
 		return result;
 	}
 }
@@ -197,5 +201,6 @@ void Matrix::transpose()
 	for (std::size_t i = 0; i < m_rowCount; ++i)
 		for (std::size_t j = 0; j < m_colCount; ++j)
 			result.m_data[j][i] = m_data[i][j];
+
 	*this = std::move(result);
 }

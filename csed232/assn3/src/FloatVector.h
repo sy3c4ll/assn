@@ -6,11 +6,14 @@
 // Uncomment this line to invalidate my three hours
 // using FloatVector = Vector<float>;
 
-class FloatVector {
+class FloatVector
+{
 private:
 	float* m_data;
 	std::size_t m_capacity;
 	std::size_t m_size;
+
+	void prepare_extra(std::size_t extra);
 
 public:
 	typedef float* iterator;

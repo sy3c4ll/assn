@@ -1,42 +1,57 @@
 #ifdef VECTOR_H
 
 #include "Vector.h"
-#include <cstring>
+#include <new>
+#include <utility>
 
-template <typename T>
-Vector<T>::Vector()
-	: m_data(nullptr), m_capacity(0), m_size(0)
+constexpr inline std::size_t _increase_to_fit(std::size_t s)
 {
+	return s < 5 ? s : s * 2;
 }
 
 template <typename T>
-Vector<T>::Vector(std::size_t size)
-	: m_data{(T*) std::calloc(size, sizeof(T))}, m_capacity{size}, m_size{size}
+void Vector<T>::prepare_extra(std::size_t extra)
 {
+	if (m_size + extra >= m_capacity)
+		allocate(_increase_to_fit(m_size + extra));
+	resize(m_size + extra);
+}
+
+template <typename T>
+Vector<T>::Vector()
+	: m_data{nullptr}, m_capacity{0}, m_size{0}
+{ }
+
+template <typename T>
+Vector<T>::Vector(std::size_t size)
+	: m_data{size ? (T*) std::malloc(size * sizeof(T)) : nullptr}, m_capacity{size}, m_size{size}
+{
+	for (std::size_t i = 0; i < size; ++i)
+		new(m_data + i) T;
 }
 
 template <typename T>
 Vector<T>::Vector(std::size_t size, const T& init)
-	: m_data{(T*) std::calloc(size, sizeof(T))}, m_capacity{size}, m_size{size}
+	: m_data{size ? (T*) std::malloc(size * sizeof(T)) : nullptr}, m_capacity{size}, m_size{size}
 {
-	for (std::size_t i = 0; i < size; i++)
-		m_data[i] = init;
+	for (std::size_t i = 0; i < size; ++i)
+		new(m_data + i) T{init};
 }
 
 template <typename T>
 Vector<T>::Vector(std::size_t size, const T* init)
-	: m_data{(T*) std::calloc(size, sizeof(T))}, m_capacity{size}, m_size{size}
+	: m_data{size ? (T*) std::malloc(size * sizeof(T)) : nullptr}, m_capacity{size}, m_size{size}
 {
-	for (std::size_t i = 0; i < m_size; ++i)
-		m_data[i] = init[i];
+	for (std::size_t i = 0; i < size; ++i)
+		new(m_data + i) T{init[i]};
 }
 
 template <typename T>
 Vector<T>::Vector(const Vector& v)
-	: m_data{(T*) std::calloc(v.m_capacity, sizeof(T))}, m_capacity{v.m_capacity}, m_size{v.m_size}
+	: m_data{v.m_size ? (T*) std::malloc(v.m_size * sizeof(T)) : nullptr}, m_capacity{v.m_size}, m_size{v.m_size}
 {
-	for (std::size_t i = 0; i < m_size; ++i)
-		m_data[i] = v.m_data[i];
+	for (std::size_t i = 0; i < v.m_size; ++i)
+		new(m_data + i) T{v.m_data[i]};
 }
 
 template <typename T>
@@ -49,6 +64,8 @@ Vector<T>::Vector(Vector&& v)
 template <typename T>
 Vector<T>::~Vector()
 {
+	for (std::size_t i = 0; i < m_size; ++i)
+		m_data[i].~T();
 	std::free(m_data);
 }
 
@@ -129,44 +146,36 @@ void Vector<T>::allocate(std::size_t capacity)
 template <typename T>
 void Vector<T>::resize(std::size_t size)
 {
-	if (size > m_capacity)
-		m_data = (T*) std::realloc(m_data, size * sizeof(T)),
-		m_capacity = size;
-	if (size > m_size)
-		// A 'zero' element is whatever all bits zeroed out means,
-		// considering that hopefully even is _valid_ for `T`
-		std::memset(m_data + m_size, 0, (size - m_size) * sizeof(T));
-	m_size = size;
-}
+	allocate(size);
 
-constexpr inline std::size_t _increase_to_fit(std::size_t s)
-{
-	return s < 5 ? s : s * 2;
+	for (std::size_t i = m_size; i < size; ++i)
+		new(m_data + i) T;
+	for (std::size_t i = size; i < m_size; ++i)
+		m_data[i].~T();
+	m_size = size;
 }
 
 template <typename T>
 void Vector<T>::push_back(const T& value)
 {
-	if (++m_size >= m_capacity)
-		allocate(_increase_to_fit(m_size));
+	prepare_extra(1);
 
-	m_data[m_size - 1] = value;
+	back() = value;
 }
 
 template <typename T>
 void Vector<T>::pop_back()
 {
-	--m_size;
+	resize(m_size - 1);
 }
 
 template <typename T>
 void Vector<T>::insert(iterator position, const T& value)
 {
-	if (++m_size >= m_capacity)
-		allocate(_increase_to_fit(m_size));
+	prepare_extra(1);
+
 	for (iterator it = end() - 1; it > position; --it)
 		*it = *(it - 1);
-
 	*position = value;
 }
 
@@ -177,46 +186,53 @@ void Vector<T>::insert(iterator position, const T* first, const T* last)
 		return;
 
 	std::size_t len = last - first;
-	if ((m_size += len) >= m_capacity)
-		allocate(_increase_to_fit(m_size));
+	prepare_extra(len);
 
-	T* cpy = nullptr;
 	if ((first >= begin() && first < end())
-		|| (last >= begin() && last < end())) {
-		cpy = (T*) std::malloc(len * sizeof(T));
+		|| (last >= begin() && last < end()))
+	{
+		T* cpy = new T[len];
 		for (std::size_t i = 0; i < len; ++i)
 			cpy[i] = first[i];
-		first = cpy, last = cpy + len;
+
+		T* cur = cpy;
+		for (iterator it = end() - 1; it >= position + len; --it)
+			*it = *(it - len);
+		for (iterator it = position; it < position + len; ++it)
+			*it = std::move(*cur++);
+		delete[] cpy;
 	}
-
-	for (iterator it = end() - 1; it >= position + len; --it)
-		*it = *(it - len);
-	for (iterator it = position; it < position + len; ++it)
-		*it = *first++;
-
-	// `free`ing a `nullptr` is a well-defined no-op
-	std::free(cpy);
+	else
+	{
+		for (iterator it = end() - 1; it >= position + len; --it)
+			*it = *(it - len);
+		for (iterator it = position; it < position + len; ++it)
+			*it = *first++;
+	}
 }
 
 template <typename T>
 void Vector<T>::erase(iterator position)
 {
-	--m_size;
-	for (iterator it = position; it < end(); ++it)
+	for (iterator it = position; it < end() - 1; ++it)
 		*it = *(it + 1);
+	resize(m_size - 1);
 }
 
 template <typename T>
 void Vector<T>::clear()
 {
+	for (std::size_t i = 0; i < m_size; i++)
+		m_data[i].~T();
 	std::free(m_data);
+
 	m_data = nullptr, m_capacity = 0, m_size = 0;
 }
 
 template <typename T>
 T& Vector<T>::operator[](std::size_t index)
 {
-	// SAFETY: UB on OOB, need I say more?
+	// SAFETY: UB on OOB
 	return m_data[index];
 }
 
@@ -266,19 +282,23 @@ bool Vector<T>::operator!=(const T* v) const
 template <typename T>
 Vector<T>& Vector<T>::operator=(const Vector& v)
 {
-	m_data = (T*) std::realloc(m_data, v.m_capacity * sizeof(T));
+	resize(v.m_size);
 	for (std::size_t i = 0; i < m_size; ++i)
 		m_data[i] = v.m_data[i];
-	m_capacity = v.m_capacity, m_size = v.m_size;
+
 	return *this;
 }
 
 template <typename T>
 Vector<T>& Vector<T>::operator=(Vector&& v)
 {
+	for (std::size_t i = 0; i < m_size; ++i)
+		m_data[i].~T();
 	std::free(m_data);
+
 	m_data = v.m_data, m_capacity = v.m_capacity, m_size = v.m_size;
 	v.m_data = nullptr, v.m_capacity = 0, v.m_size = 0;
+
 	return *this;
 }
 

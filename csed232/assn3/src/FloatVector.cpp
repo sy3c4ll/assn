@@ -1,32 +1,39 @@
 #include "FloatVector.h"
 #include <cstring>
 
-FloatVector::FloatVector()
-	: m_data(nullptr), m_capacity(0), m_size(0)
+constexpr inline std::size_t _increase_to_fit(std::size_t s)
 {
+	return s < 5 ? s : s * 2;
 }
+
+void FloatVector::prepare_extra(std::size_t extra)
+{
+	if ((m_size += extra) >= m_capacity)
+		allocate(_increase_to_fit(m_size));
+}
+
+FloatVector::FloatVector()
+	: m_data{nullptr}, m_capacity{0}, m_size{0}
+{ }
 
 FloatVector::FloatVector(std::size_t size)
 	: m_data{(float*) std::calloc(size, sizeof(float))}, m_capacity{size}, m_size{size}
-{
-}
+{ }
 
 FloatVector::FloatVector(std::size_t size, const float& init)
 	: m_data{(float*) std::malloc(size * sizeof(float))}, m_capacity{size}, m_size{size}
 {
-	for (std::size_t i = 0; i < size; i++)
+	for (std::size_t i = 0; i < size; ++i)
 		m_data[i] = init;
 }
 
 FloatVector::FloatVector(std::size_t size, const float* init)
 	: m_data{(float*) std::memcpy(std::malloc(size * sizeof(float)), init, size * sizeof(float))}, m_capacity{size}, m_size{size}
-{
-}
+{ }
 
 FloatVector::FloatVector(const FloatVector& v)
-	: m_data{(float*) std::memcpy(std::malloc(v.m_capacity * sizeof(float)), v.m_data, v.m_size * sizeof(float))}, m_capacity{v.m_capacity}, m_size{v.m_size}
-{
-}
+	: m_data{(float*) std::memcpy(std::malloc(v.m_size * sizeof(float)), v.m_data, v.m_size * sizeof(float))}, m_capacity{v.m_size}, m_size{v.m_size}
+{ }
 
 FloatVector::FloatVector(FloatVector&& v)
 	: m_data{v.m_data}, m_capacity{v.m_capacity}, m_size{v.m_size}
@@ -104,25 +111,18 @@ void FloatVector::allocate(std::size_t capacity)
 
 void FloatVector::resize(std::size_t size)
 {
-	if (size > m_capacity)
-		m_data = (float*) std::realloc(m_data, size * sizeof(float)),
-		m_capacity = size;
+	allocate(size);
+
 	if (size > m_size)
 		std::memset(m_data + m_size, 0, (size - m_size) * sizeof(float));
 	m_size = size;
 }
 
-constexpr inline std::size_t _increase_to_fit(std::size_t s)
-{
-	return s < 5 ? s : s * 2;
-}
-
 void FloatVector::push_back(const float& value)
 {
-	if (++m_size >= m_capacity)
-		allocate(_increase_to_fit(m_size));
+	prepare_extra(1);
 
-	m_data[m_size - 1] = value;
+	back() = value;
 }
 
 void FloatVector::pop_back()
@@ -132,8 +132,7 @@ void FloatVector::pop_back()
 
 void FloatVector::insert(iterator position, const float& value)
 {
-	if (++m_size >= m_capacity)
-		allocate(_increase_to_fit(m_size));
+	prepare_extra(1);
 
 	for (iterator it = end() - 1; it > position; --it)
 		*it = *(it - 1);
@@ -146,12 +145,12 @@ void FloatVector::insert(iterator position, const float* first, const float* las
 		return;
 
 	std::size_t len = last - first;
-	if ((m_size += len) >= m_capacity)
-		allocate(_increase_to_fit(m_size));
+	prepare_extra(len);
 
 	float* cpy = nullptr;
 	if ((first >= begin() && first < end())
-		|| (last >= begin() && last < end())) {
+		|| (last >= begin() && last < end()))
+	{
 		cpy = (float*) std::memcpy(std::malloc(len * sizeof(float)), first, len * sizeof(float));
 		first = cpy, last = cpy + len;
 	}
@@ -166,9 +165,9 @@ void FloatVector::insert(iterator position, const float* first, const float* las
 
 void FloatVector::erase(iterator position)
 {
-	--m_size;
-	for (iterator it = position; it < end(); ++it)
+	for (iterator it = position; it < end() - 1; ++it)
 		*it = *(it + 1);
+	--m_size;
 }
 
 void FloatVector::clear()
@@ -179,7 +178,7 @@ void FloatVector::clear()
 
 float& FloatVector::operator[](std::size_t index)
 {
-	// SAFETY: UB on OOB, need I say more?
+	// SAFETY: UB on OOB
 	return m_data[index];
 }
 
@@ -191,9 +190,7 @@ const float& FloatVector::operator[](std::size_t index) const
 
 bool FloatVector::operator==(const FloatVector& v) const
 {
-	if (m_size != v.m_size)
-		return false;
-	return memcmp(m_data, v.m_data, m_size * sizeof(float)) == 0;
+	return m_size == v.m_size && memcmp(m_data, v.m_data, m_size * sizeof(float)) == 0;
 }
 
 bool FloatVector::operator!=(const FloatVector& v) const
@@ -217,16 +214,19 @@ bool FloatVector::operator!=(const float* v) const
 
 FloatVector& FloatVector::operator=(const FloatVector& v)
 {
-	m_data = (float*) std::realloc(m_data, v.m_capacity * sizeof(float));
+	m_data = (float*) std::realloc(m_data, v.m_size * sizeof(float));
 	std::memcpy(m_data, v.m_data, v.m_size * sizeof(float));
-	m_capacity = v.m_capacity, m_size = v.m_size;
+	m_capacity = v.m_size, m_size = v.m_size;
+
 	return *this;
 }
 
 FloatVector& FloatVector::operator=(FloatVector&& v)
 {
 	std::free(m_data);
+
 	m_data = v.m_data, m_capacity = v.m_capacity, m_size = v.m_size;
 	v.m_data = nullptr, v.m_capacity = 0, v.m_size = 0;
+
 	return *this;
 }
