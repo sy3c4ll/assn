@@ -1,3 +1,16 @@
+// *****************************************************************************
+//
+// ë¬´ì€ì¬í•™ë¶€ 20230262 ê¹€ì—°ì›…
+// yeonung04 (POSTECH ID)
+// 2023-2 ê°ì²´ì§€í–¥ í”„ë¡œê·¸ë˜ë° Assignment #3
+//
+// ë‚˜ëŠ” ì´ í”„ë¡œê·¸ë˜ë° ê³¼ì œë¥¼ ë‹¤ë¥¸ ì†ŒìŠ¤ë¥¼ ì¸ìš©ì—†ì´ ì°¸ê³ í•˜ê±°ë‚˜,
+// ë‹¤ë¥¸ ì‚¬ëŒì˜ ë¶€ì ì ˆí•œ ë„ì›€ì„ ë°›ì§€ ì•Šê³  ì™„ìˆ˜í•˜ì˜€ìŠµë‹ˆë‹¤.
+// I completed this programming task without using any uncited sources
+// or receiving improper help from others.
+//
+// *****************************************************************************
+
 #include <iostream>
 #include <cstdio>
 #include "FloatVector.h"
@@ -6,8 +19,8 @@
 
 using namespace std;
 
-// ÇÊ¿ä½Ã Å×½ºÆ® ÇÔ¼ö È°¿ë
-// Áö¿öµµ ¹«¹æ
+// í•„ìš”ì‹œ í…ŒìŠ¤íŠ¸ í•¨ìˆ˜ í™œìš©
+// ì§€ì›Œë„ ë¬´ë°©
 void print_float_vec(const FloatVector& vec)
 {
 	cout << "----------------------------------------" << endl;
@@ -107,11 +120,11 @@ void test_float_vec_template()
 
 void test_matrix()
 {
-	// Çà·Ä »ı¼º
+	// í–‰ë ¬ ìƒì„±
 	Matrix matrix1(2, 2);
 	Matrix matrix2(2, 2);
 
-	// µ¥ÀÌÅÍ ¼³Á¤
+	// ë°ì´í„° ì„¤ì •
 	matrix1.element(0, 0) = 1.0;
 	matrix1.element(0, 1) = 2.0;
 	matrix1.element(1, 0) = 3.0;
@@ -125,37 +138,37 @@ void test_matrix()
 	print_matrix(matrix1);
 	print_matrix(matrix2);
 
-	// Çà·Ä µ¡¼À
+	// í–‰ë ¬ ë§ì…ˆ
 	Matrix resultAdd = matrix1;
 	resultAdd += matrix2;
 
 	print_matrix(resultAdd);
 
-	// Çà·Ä »¬¼À
+	// í–‰ë ¬ ëº„ì…ˆ
 	Matrix resultSubtract = matrix1;
 	resultSubtract -= matrix2;
 
 	print_matrix(resultSubtract);
 
-	// Çà·Ä °ö¼À (¿ä¼Òº°)
+	// í–‰ë ¬ ê³±ì…ˆ (ìš”ì†Œë³„)
 	Matrix resultMultiply = matrix1;
 	resultMultiply *= matrix2;
 
 	print_matrix(resultMultiply);
 
-	// Çà·Ä ½ºÄ®¶ó °ö¼À
+	// í–‰ë ¬ ìŠ¤ì¹¼ë¼ ê³±ì…ˆ
 	Matrix resultScalarMultiply = matrix1;
 	resultScalarMultiply *= 2.0;
 
 	print_matrix(resultScalarMultiply);
 
-	// Çà·Ä °ö¼À
+	// í–‰ë ¬ ê³±ì…ˆ
 	Matrix matrix3(2, 3);
 	Matrix resultMatMul = matrix1.matmul(matrix3);
 
 	print_matrix(resultMatMul);
 
-	// ÇÕ°è ¿¬»ê
+	// í•©ê³„ ì—°ì‚°
 	Matrix resultSumRow = matrix1.sum(0);
 	Matrix resultSumCol = matrix1.sum(1);
 	Matrix resultSumAll = matrix1.sum();
@@ -164,7 +177,7 @@ void test_matrix()
 	print_matrix(resultSumCol);
 	print_matrix(resultSumAll);
 
-	// ÀüÄ¡ Çà·Ä
+	// ì „ì¹˜ í–‰ë ¬
 	matrix1.transpose();
 
 	print_matrix(matrix1);

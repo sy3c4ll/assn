@@ -1,3 +1,16 @@
+// *****************************************************************************
+//
+// 무은재학부 20230262 김연웅
+// yeonung04 (POSTECH ID)
+// 2023-2 객체지향 프로그래밍 Assignment #3
+//
+// 나는 이 프로그래밍 과제를 다른 소스를 인용없이 참고하거나,
+// 다른 사람의 부적절한 도움을 받지 않고 완수하였습니다.
+// I completed this programming task without using any uncited sources
+// or receiving improper help from others.
+//
+// *****************************************************************************
+
 #ifndef FLOAT_VECTOR_H
 #define FLOAT_VECTOR_H
 
