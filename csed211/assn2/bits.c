@@ -249,32 +249,31 @@ unsigned float_i2f(int x) {
   unsigned sign_part = x & 0x80000000;
   unsigned exp_part;
   unsigned frac_part;
-  unsigned expn, xc;
+  unsigned expn, absc;
+  unsigned abs = sign_part ? -x : x;
   if (!x)
     return 0;
-  if (sign_part)
-    x = -x;
   /* asm (
     "bsrl %1, %0"
     : "=r" (expn)
     : "r" (x)
   ); */
-  for (expn = -1, xc = x; xc; ++expn, xc >>= 1);
+  for (expn = -1, absc = abs; absc; ++expn, absc >>= 1);
   exp_part = (expn + 0x7f) << 23;
-  frac_part = x << 31 - expn >> 9;
+  frac_part = abs << 31 - expn << 1 >> 9;
   // I really don't wanna do rounding
-  // G = x >> expn - 23 & 1, R = x >> expn - 24 & 1, S = x & (1 << expn - 24) - 1
+  // G = abs >> expn - 23 & 1, R = abs >> expn - 24 & 1, S = abs & (1 << expn - 24) - 1
   // G increases when either
   // 1. R && S
   // 2. G && R && !S
   // => R && (G || S)
-  // So for cases where expn > 23, x >> expn - 24 & 1
-  // && ( x >> expn - 23 & 1 || x & (1 << expn - 24) - 1) is the condition to check
+  // So for cases where expn > 23, abs >> expn - 24 & 1
+  // && ( abs >> expn - 23 & 1 || abs & (1 << expn - 24) - 1) is the condition to check
   // whether there is a carry
   if (expn > 23
-    && x >> expn - 24 & 1
-    && (x >> expn - 23 & 1
-      || x & (1 << expn - 24) - 1))
+    && abs >> expn - 24 & 1
+    && (abs >> expn - 23 & 1
+      || abs & (1 << expn - 24) - 1))
     ++frac_part;
   // Post-normalisation is performed automagically
   // since the MSB was removed above and the only sum to overflow frac
