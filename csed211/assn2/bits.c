@@ -209,8 +209,8 @@ unsigned float_abs(unsigned uf) {
   // Luckily IEEE754 uses the sign bit like an actual sign!
   // And NaNs don't care about the sign bit... nevermind btest does
   unsigned exp = uf >> 23 & 0xff;
-  unsigned fact = uf & 0x7fffff;
-  return exp == 0xff && fact ? uf : uf & 0x7fffffff;
+  unsigned frac = uf & 0x7fffff;
+  return exp == 0xff && frac ? uf : uf & 0x7fffffff;
 }
 /* 
  * float_twice - Return bit-level equivalent of expression 2*f for
@@ -227,12 +227,13 @@ unsigned float_twice(unsigned uf) {
   unsigned exp = uf >> 23 & 0xff;
   if (exp == 0xff) {
     return uf;
-  } else if (exp == 0x00) {
+  } else if (exp == 0) {
     return uf << 1 | uf & 0x80000000;
   } else {
     return uf + 0x800000;
     // What happens on overflow i.e. exp == 0xfe?
     // I guess that merits an inf...? Will implement once confirmed
+    // It seems `btest` doesn't care, at least
   }
 }
 /* 
@@ -260,7 +261,7 @@ unsigned float_i2f(int x) {
   ); */
   for (expn = -1, xc = x; xc; ++expn, xc >>= 1);
   exp_part = (expn + 0x7f) << 23;
-  frac_part = (expn > 23 ? x >> expn - 23 : x << 23 - expn) & 0x7fffff;
+  frac_part = x << 31 - expn >> 9;
   // I really don't wanna do rounding
   // G = x >> expn - 23 & 1, R = x >> expn - 24 & 1, S = x & (1 << expn - 24) - 1
   // G increases when either
@@ -300,7 +301,7 @@ int float_f2i(unsigned uf) {
   int mantissa = uf & 0x7fffff | 0x800000;
   if (expn >= 32) {
     return 0x80000000;
-  } else if (expn < 0x00) {
+  } else if (expn < 0) {
     return 0;
   } else {
     return (expn > 23 ? mantissa << expn - 23 : mantissa >> 23 - expn)
