@@ -34,10 +34,10 @@
 
 = Problem Statement
 
-This lab presents a second set of puzzles, two of which is related to integer
+This lab presents a second set of puzzles, two of which are related to integer
 arithmetic and the other four to floating-point arithmetic. The two categories
-each have separate rulesets, allowing and disallowing different sets of
-operations and statements.
+each have separate rulesets, allowing different sets of operations and
+constructs.
 
 == Integer Arithmetic
 
@@ -109,8 +109,8 @@ otherwise. We define `sx` and `sy` as such values for `x` and `y` respectively.
 
 All of the above can be aggregated into the claim that `x < y` if and only if:
 
-> Either `x` is negative and `y` is non-negative; or `x` and `y` have the same sign and
-`x - y == x + ~y + 1` is negative. 
+*_Either `x` is negative and `y` is non-negative; or `x` and `y` have the same sign and
+`x - y == x + ~y + 1` is negative._*
 
 Taking care to make sure the `-1`s are masked into `1`s for the return value:
 
@@ -191,6 +191,47 @@ unsigned float_twice(unsigned uf) {
 
 == `float_i2f(x)`
 
+First, `0` is unique out of all integer values in that expressed as a floating-
+point number, it is denormalised as opposed to all other values which become
+normalised in their floating-point representations. As such, we filter out `0`s
+in a conditional and return its floating-point representation (which also
+happens to be `0x00000000`) early.
+
+The representation of negative numbers in two's complement integers and IEEE754
+floating-point numbers are very different, therefore we will separate the sign
+early and deal with the argument's absolute value only from now on. The sign of
+integer `x` can be discerned with bitwise AND `&`-ing the mask `0x80000000`, to
+leave only the top bit. For negative integers this value will be `0x80000000`,
+while for non-negative integers it will be `0`. A ternary operation will coerce
+this value into `true` and `false` respectively, allowing us to assign a new
+variable `-x` and `x` in their respective cases which is its absolute value.
+
+Then, the exponent must be calculated. The exponent is the number of bits
+required to represent the absolute value of the integer, minus one. This can be
+calculated by right-shifting the absolute value by 1 until it becomes `0`, and
+counting the number of shifts. The exponent is biased by `0x7f`, and the
+exponent bits are the 8 bits following the sign bit. The exponent can be
+calculated by adding `0x7f` to the number of shifts, and left-shifting the
+result by 23 bits.
+
+The fraction bits are the remaining bits following the exponent bits. The
+mantissa can be aligned left by left-shifting the absolute value by `31 - expn`
+bits, dropping the top bit with one more left-shift, then right-shifting the
+result by 9 bits. The left-shifts are not done in one step to prevent overflow.
+
+The fraction bits must be rounded to the nearest even number. The guard bit is
+defined as the last bit of the fraction bits, the round bit is the bit following
+the guard bit, and the sticky bit is the bitwise OR `|` of all bits following
+the round bit. Rounding must happen when either the round bit is `1` and the
+guard bit is `1`, or the guard bit is `1`, round bit is `1` and the sticky bit
+is `0`. The fraction bits can be incremented by `1` in such cases. A simple hack is used for post-normalisation, where the carry passes on to the exponent.
+
+The sign, exponent, and fraction bits can be combined to form the floating-point
+representation of the integer. The floating-point representation is the sign
+bit, exponent bits, and fraction bits concatenated together.
+
+The above can be implemented as follows:
+
 ```c
 unsigned float_i2f(int x) {
   unsigned sign_part = x & 0x80000000;
@@ -203,7 +244,7 @@ unsigned float_i2f(int x) {
     x = -x;
   for (expn = -1, xc = x; xc; ++expn, xc >>= 1);
   exp_part = (expn + 0x7f) << 23;
-  frac_part = x << 31 - expn >> 9;
+  frac_part = x << 31 - expn << 1 >> 9;
   if (expn > 23
     && x >> expn - 24 & 1
     && (x >> expn - 23 & 1
@@ -223,15 +264,15 @@ by adding `0x800000` to it. The exponent can be used to determine the behaviour
 of the function:
 
 + If the exponent is greater than or equal to `32`, the number is too large to
-be represented as an integer, and the function should return `0x80000000`. NaNs
-and infinities are coincidentally included in this case as well.
+  be represented as an integer, and the function should return `0x80000000`. NaNs
+  and infinities are coincidentally included in this case as well.
 + If the exponent is less than `0`, the number is too small to be represented as
-an integer, and the function should return `0`. `0` itself is coincidentally
-included in this case as well.
+  an integer, and the function should return `0`. `0` itself is coincidentally
+  included in this case as well.
 + Otherwise, the number can be represented as an integer. The mantissa should be
-shifted left by `expn - 23` if `expn` is greater than `23`, and right by `23 -
-expn` otherwise, to align the mantissa bits to their proper place. The sign
-should be set with two's complement if the sign bit of the argument is `1`.
+  shifted left by `expn - 23` if `expn` is greater than `23`, and right by
+  `23 - expn` otherwise, to align the mantissa bits to their proper place. The sign
+  should be set with two's complement if the sign bit of the argument is `1`.
 
 The above can be implemented as follows:
 
@@ -252,8 +293,13 @@ int float_f2i(unsigned uf) {
 
 = Conclusion
 
+#figure(
+  image("result.png"),
+  caption: [Output from `driver.pl`],
+)
+
 = References
 
-- [NaN - Wikipedia](https://en.wikipedia.org/wiki/NaN)
-- [IEEE 754 - Wikipedia](https://en.wikipedia.org/wiki/IEEE_754)
-- [C Operator Precedence - cppreference.com](https://en.cppreference.com/w/c/language/operator_precedence)
+- #link("https://en.wikipedia.org/wiki/NaN")[NaN - Wikipedia]
+- #link("https://en.wikipedia.org/wiki/IEEE_754")[IEEE 754 - Wikipedia]
+- #link("https://en.cppreference.com/w/c/language/operator_precedence")[C Operator Precedence - cppreference.com]
