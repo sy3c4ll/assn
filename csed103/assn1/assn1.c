@@ -273,6 +273,8 @@ int card_value(char card) {
       return 1;
     case 'J':
       return 0;
+    default:
+      return -1;
   }
 }
 void menu() {
@@ -303,6 +305,7 @@ void menu() {
           while (getchar() != '\n');
           printf("올바르지 않은 입력입니다. r을 눌러야 메인 메뉴로 돌아갑니다: ");
         }
+        system("clear");
         break;
       case '2':
         int round = 0, user_points = 4, cpu_points = 4;
@@ -349,5 +352,8 @@ void print_points(int points) {
     printf("□");
 }
 int cpu(char user_card, char cpu_card, bool bet) {
-  return '0';
+  if (rand() % 2)
+    return '1';
+  else
+    return '0';
 }
