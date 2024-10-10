@@ -1,3 +1,5 @@
+#import "@preview/fletcher:0.5.1" as fletcher: diagram, node, edge
+
 #let title = [CSED103 Fall '24: Assignment \#1]
 
 #set page(
@@ -18,7 +20,7 @@
   title
 ))
 #align(right, text(style: "italic")[
-  2024-09-27/2024-10-10 \
+  2024-09-26/2024-10-10 \
   20230262 / Yeonung Kim \
   yeonung04\@postech.ac.kr \
 ])
@@ -37,7 +39,51 @@
 
 This program implements Kuhn Poker as described in the assignment. It implements a menu screen, in which the player may choose to print the rules, play the game or exit the program. It also implements the game itself, which is played between the player and the computer. The player may choose to check, fold, call or raise. The computer will play random moves. The game ends when either player folds, or when both the player and the computer confirm on the pot. The winner is determined by the hand strength of the two players. The player is automatically sent to the menu screen after the game.
 
+The following is a structure diagram describing the high-level architecture of the program:
+
 = Usage
+
+The program is a single C99 file (assn1.c), and can be compiled and run trivially.
+
+== Unix/Linux
+
+=== Prerequisites
+
+GCC or Clang
+
+=== Compiling
+
+With GCC:
+
+`gcc -std=c99 -oassn1 assn1.c`
+
+Or with Clang:
+
+`clang -std=c99 -oassn1 assn1.c`
+
+=== Running
+
+`./assn1`
+
+== Windows
+
+=== Prerequisites
+
+MSVC, or alternatively GCC via MinGW
+
+=== Compiling
+
+With MSVC, in the Visual Studio Developer Powershell:
+
+`cl.exe assn1.c`
+
+Or with MinGW GCC, in MinGW bash:
+
+`gcc.exe -std=c99 -oassn1.exe assn1.c`
+
+=== Running
+
+`./assn1.exe`
 
 = Implementation
 
