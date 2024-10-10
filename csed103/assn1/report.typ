@@ -90,6 +90,26 @@ Or with MinGW GCC, in MinGW bash:
 
 = Screenshots
 
+#figure(image("img/1.png"), caption: [Before compilation])
+
+#figure(image("img/2.png"), caption: [On compilation])
+
+#figure(image("img/3.png"), caption: [On execution])
+
+#figure(image("img/4.png"), caption: [Game rules])
+
+#figure(image("img/5.png"), caption: [On invalid input])
+
+#figure(image("img/6.png"), caption: [On game start])
+
+#figure(image("img/7.png"), caption: [On round end])
+
+#figure(image("img/8.png"), caption: [On game end])
+
+#figure(image("img/9.png"), caption: [Returning to menu])
+
+#figure(image("img/10.png"), caption: [On exit])
+
 = Discussion
 
 == Points of interest
