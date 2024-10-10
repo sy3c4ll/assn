@@ -8,11 +8,12 @@
 #set par(justify: true)
 #set text(
   font: "Source Han Serif K",
-  size: 11pt,
+  size: 10pt,
   hyphenate: false,
 )
 #set heading(numbering: "I a. ")
 #show raw: set text(font: "Sarasa Mono K")
+#show link: underline
 
 #align(center, text(size: 24pt, weight: "bold",
   title
