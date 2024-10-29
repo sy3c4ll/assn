@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 from pwn import *
+from sys import argv
 
-proc = process(["rtarget", "-q"])
+proc = process(["rtarget", *argv])
 elf = ELF("rtarget")
 rop = ROP("rtarget")
 cookie = int(open("cookie.txt").read(), 16)

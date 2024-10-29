@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 from pwn import *
+from sys import argv
 
-proc = process(["ctarget", "-q"])
+proc = process(["ctarget", *argv])
 elf = ELF("ctarget")
 cookie = int(open("cookie.txt").read(), 16)
 buffer_size = 0x18

